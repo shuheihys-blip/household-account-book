@@ -30,7 +30,7 @@
   <!-- パスワード認証画面 -->
   <div id="auth-screen" class="fixed inset-0 bg-slate-800 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center">
-      <div class="w-16 h-16 rounded-2xl overflow-hidden mx-auto shadow-md border border-gray-100 flex items-center justify-center bg-slate-100">
+      <div class="w-20 h-20 rounded-2xl overflow-hidden mx-auto shadow-md border border-gray-100 flex items-center justify-center bg-slate-100">
         <!-- 樹木アイコン (SVG) -->
         <svg viewBox="0 0 100 100" class="w-full h-full">
           <rect width="100" height="100" fill="#a4b8c4"/>
@@ -59,6 +59,8 @@
 
   <!-- アプリ本体 -->
   <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-xl relative hidden">
+    
+    <!-- ヘッダー -->
     <header class="header-bg text-white p-4 sticky top-0 z-20 shadow-md">
       <h1 class="text-xl font-bold tracking-wide text-center mb-3 nowrap">
         Household Account Book
@@ -76,7 +78,10 @@
       </div>
     </header>
 
+    <!-- メインコンテンツ -->
     <main class="p-4 space-y-6">
+      
+      <!-- タブ1: ダッシュボード -->
       <section id="tab-dashboard" class="space-y-5">
         <div class="grid grid-cols-3 gap-2 text-center">
           <div class="bg-blue-50/80 p-3 rounded-2xl border border-blue-100">
@@ -120,6 +125,7 @@
         </div>
       </section>
 
+      <!-- タブ2: 明細・入力 -->
       <section id="tab-history" class="space-y-5 hidden">
         <div class="bg-sage-light p-4 rounded-2xl border border-emerald-900/10 space-y-3 shadow-sm">
           <h3 class="font-bold text-sage text-sm flex items-center gap-1.5">
@@ -192,6 +198,7 @@
         </div>
       </section>
 
+      <!-- タブ3: 貯金管理 -->
       <section id="tab-savings" class="space-y-5 hidden">
         <div class="bg-emerald-800 text-white p-5 rounded-2xl shadow-md space-y-2">
           <p class="text-xs text-emerald-200 font-medium">現在の総貯蓄累計額</p>
@@ -234,6 +241,7 @@
         </div>
       </section>
 
+      <!-- タブ4: 設定 -->
       <section id="tab-settings" class="space-y-5 hidden">
         <div class="bg-white p-4 rounded-2xl border card-border shadow-sm space-y-3">
           <h3 class="font-bold text-gray-700 text-sm border-b pb-2 flex items-center gap-1.5">
@@ -261,6 +269,7 @@
       </section>
     </main>
 
+    <!-- フッター -->
     <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 flex justify-around p-2 text-[10px] font-medium text-gray-500 z-20">
       <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center gap-1 text-sage font-bold">
         <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>ダッシュ</span>
@@ -277,6 +286,7 @@
     </nav>
   </div>
 
+  <!-- 予算設定モーダル -->
   <div id="budget-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl p-5 w-full max-w-sm space-y-4 max-h-[85vh] overflow-y-auto">
       <h3 class="font-bold text-gray-800 text-sm border-b pb-2">月間予算の設定</h3>
@@ -289,6 +299,7 @@
   </div>
 
   <script>
+    // パスワード設定（初期値: Fuyu、大文字・小文字を問わず比較）
     let APP_PASS = (localStorage.getItem('hab_app_pass') || 'Fuyu').trim().toLowerCase();
 
     function verifyPassword(e) {
@@ -364,10 +375,4 @@
         document.getElementById(`nav-${t}`).classList.remove('text-sage', 'font-bold');
       });
       document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-      document.getElementById(`nav-${tabName}`).classList.add('text-sage', 'font-bold');
-      if (tabName === 'dashboard') renderCharts();
-    }
-
-    function setPeriodMode(mode) {
-      periodMode = mode;
-      document.getElementById('mode-month').className = mode === 'm
+      document.getElementById(`nav-${tabNa
