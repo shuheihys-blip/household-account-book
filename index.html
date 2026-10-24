@@ -17,6 +17,7 @@
       color: #2b303a;
     }
     .header-bg { background-color: #8fa3b0; }
+    .nav-bg { background-color: #7d93a1; }
     .btn-primary { background-color: #3b5249; color: #ffffff; }
     .btn-primary:hover { background-color: #2c3e37; }
     .card-border { border-color: #e2e8f0; }
@@ -26,39 +27,7 @@
   </style>
 </head>
 <body class="pb-20">
-
-  <!-- パスワード認証画面 -->
-  <div id="auth-screen" class="fixed inset-0 bg-slate-800 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center">
-      <div class="w-20 h-20 rounded-2xl overflow-hidden mx-auto shadow-md border border-gray-100 flex items-center justify-center bg-slate-100">
-        <!-- 樹木アイコン (SVG) -->
-        <svg viewBox="0 0 100 100" class="w-full h-full">
-          <rect width="100" height="100" fill="#a4b8c4"/>
-          <ellipse cx="40" cy="55" rx="18" ry="25" fill="#d3bd7a"/>
-          <ellipse cx="50" cy="40" rx="20" ry="28" fill="#e2d49e"/>
-          <ellipse cx="62" cy="52" rx="20" ry="26" fill="#5b7b63"/>
-          <rect x="39" y="70" width="2" height="20" fill="#4a4a4a"/>
-          <rect x="49" y="60" width="2" height="30" fill="#4a4a4a"/>
-          <rect x="61" y="68" width="2" height="22" fill="#4a4a4a"/>
-          <rect x="0" y="88" width="100" height="12" fill="#3b5249"/>
-        </svg>
-      </div>
-      <div>
-        <h2 class="text-lg font-bold text-gray-800">Household Account Book</h2>
-        <p class="text-xs text-gray-500 mt-1">パスワードを入力してログインしてください</p>
-      </div>
-      <form onsubmit="verifyPassword(event)" class="space-y-3">
-        <input type="password" id="input-pass" placeholder="パスワードを入力" required autocomplete="current-password" class="w-full p-3 border border-gray-300 rounded-xl text-center font-bold tracking-widest bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600">
-        <p id="auth-error" class="text-xs text-red-500 hidden font-bold">パスワードが正しくありません</p>
-        <button type="submit" class="w-full btn-primary font-bold py-3 rounded-xl text-sm shadow transition">
-          解除して開く
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- アプリ本体 -->
-  <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-xl relative hidden">
+  <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-xl relative">
     
     <!-- ヘッダー -->
     <header class="header-bg text-white p-4 sticky top-0 z-20 shadow-md">
@@ -86,18 +55,19 @@
         <div class="grid grid-cols-3 gap-2 text-center">
           <div class="bg-blue-50/80 p-3 rounded-2xl border border-blue-100">
             <p class="text-xs text-gray-500 font-semibold mb-1">収入</p>
-            <p id="total-income" class="text-sm font-bold text-blue-700">¥0</p>
+            <p id="total-income" class="text-sm md:text-base font-bold text-blue-700">¥0</p>
           </div>
           <div class="bg-red-50/80 p-3 rounded-2xl border border-red-100">
             <p class="text-xs text-gray-500 font-semibold mb-1">支出</p>
-            <p id="total-expense" class="text-sm font-bold text-red-600">¥0</p>
+            <p id="total-expense" class="text-sm md:text-base font-bold text-red-600">¥0</p>
           </div>
           <div class="bg-emerald-50/80 p-3 rounded-2xl border border-emerald-100">
             <p class="text-xs text-gray-500 font-semibold mb-1">収支</p>
-            <p id="total-balance" class="text-sm font-bold text-emerald-700">¥0</p>
+            <p id="total-balance" class="text-sm md:text-base font-bold text-emerald-700">¥0</p>
           </div>
         </div>
 
+        <!-- 全体・大項目予算進捗 -->
         <div class="bg-white p-4 rounded-2xl border card-border shadow-sm space-y-3">
           <div class="flex justify-between items-center border-b pb-2">
             <h3 class="font-bold text-gray-700 flex items-center gap-1.5 text-sm">
@@ -110,23 +80,29 @@
           <div id="budget-progress-container" class="space-y-3 text-xs"></div>
         </div>
 
+        <!-- グラフ -->
         <div class="bg-white p-4 rounded-2xl border card-border shadow-sm">
           <h3 class="font-bold text-gray-700 mb-3 text-sm flex items-center gap-1.5">
             <i data-lucide="pie-chart" class="w-4 h-4 text-sage"></i> 支出カテゴリ内訳
           </h3>
-          <div class="h-56 relative"><canvas id="categoryChart"></canvas></div>
+          <div class="h-56 relative">
+            <canvas id="categoryChart"></canvas>
+          </div>
         </div>
 
         <div class="bg-white p-4 rounded-2xl border card-border shadow-sm">
           <h3 id="bar-chart-title" class="font-bold text-gray-700 mb-3 text-sm flex items-center gap-1.5">
             <i data-lucide="bar-chart-3" class="w-4 h-4 text-sage"></i> 日別収支推移
           </h3>
-          <div class="h-48 relative"><canvas id="trendChart"></canvas></div>
+          <div class="h-48 relative">
+            <canvas id="trendChart"></canvas>
+          </div>
         </div>
       </section>
 
       <!-- タブ2: 明細・入力 -->
       <section id="tab-history" class="space-y-5 hidden">
+        <!-- 入力フォーム -->
         <div class="bg-sage-light p-4 rounded-2xl border border-emerald-900/10 space-y-3 shadow-sm">
           <h3 class="font-bold text-sage text-sm flex items-center gap-1.5">
             <i data-lucide="plus-circle" class="w-4 h-4"></i> 収支を入力
@@ -140,14 +116,21 @@
                 <input type="radio" name="type" value="income" onchange="updateCategoryOptions()" class="hidden"> 収入
               </label>
             </div>
+
             <div class="grid grid-cols-2 gap-2">
               <input type="date" id="input-date" required class="w-full p-2.5 border rounded-xl text-xs bg-white">
               <input type="number" id="input-amount" placeholder="金額 (円)" required class="w-full p-2.5 border rounded-xl text-xs bg-white">
             </div>
+
             <div class="grid grid-cols-2 gap-2">
-              <select id="input-main-cat" onchange="updateSubCatOptions()" required class="w-full p-2.5 border rounded-xl text-xs bg-white"><option value="">大項目を選択</option></select>
-              <select id="input-sub-cat" required class="w-full p-2.5 border rounded-xl text-xs bg-white"><option value="">小項目を選択</option></select>
+              <select id="input-main-cat" onchange="updateSubCatOptions()" required class="w-full p-2.5 border rounded-xl text-xs bg-white">
+                <option value="">大項目を選択</option>
+              </select>
+              <select id="input-sub-cat" required class="w-full p-2.5 border rounded-xl text-xs bg-white">
+                <option value="">小項目を選択</option>
+              </select>
             </div>
+
             <div class="grid grid-cols-2 gap-2">
               <select id="input-payer" class="w-full p-2.5 border rounded-xl text-xs bg-white">
                 <option value="しゅう">支払者: しゅう</option>
@@ -160,12 +143,18 @@
                 <option value="現金">方法: 現金</option>
               </select>
             </div>
+
             <input type="text" id="input-memo" placeholder="メモ（任意）" class="w-full p-2.5 border rounded-xl text-xs bg-white">
-            <button type="submit" class="w-full btn-primary font-bold py-2.5 rounded-xl text-xs shadow transition">登録する</button>
+
+            <button type="submit" class="w-full btn-primary font-bold py-2.5 rounded-xl text-xs shadow transition">
+              登録する
+            </button>
           </form>
         </div>
 
+        <!-- 月別モード時のみ表示する精算・支払者別カード -->
         <div id="settlement-container" class="space-y-4">
+          <!-- 立替精算金額カード -->
           <div class="bg-amber-50/90 p-4 rounded-2xl border border-amber-200/80 shadow-sm">
             <h3 class="font-bold text-amber-900 text-sm flex items-center justify-between border-b border-amber-200 pb-2 mb-2">
               <span class="flex items-center gap-1.5"><i data-lucide="calculator" class="w-4 h-4 text-amber-700"></i> 立替・精算計算</span>
@@ -175,6 +164,8 @@
               <span id="settlement-amount" class="text-xl font-bold text-amber-900">¥0</span>
             </div>
           </div>
+
+          <!-- 支払者別 × 支払い方法別 合計 -->
           <div class="bg-white p-4 rounded-2xl border card-border shadow-sm space-y-3">
             <h3 class="font-bold text-gray-700 text-sm flex items-center gap-1.5 border-b pb-2">
               <i data-lucide="credit-card" class="w-4 h-4 text-sage"></i> 支払者別 × 支払い方法別 合計
@@ -183,13 +174,15 @@
           </div>
         </div>
 
+        <!-- カテゴリ別集計 -->
         <div class="bg-white p-4 rounded-2xl border card-border shadow-sm space-y-3">
           <h3 class="font-bold text-gray-700 text-sm flex items-center gap-1.5 border-b pb-2">
-            <i data-lucide="layers" class="w-4 h-4 text-sage"></i> カテゴリ別集計
+            <i data-lucide="layers" class="w-4 h-4 text-sage"></i> カテゴリ別集計（大項目・小項目）
           </h3>
           <div id="category-summary-list" class="space-y-2 text-xs"></div>
         </div>
 
+        <!-- 履歴一覧 -->
         <div class="bg-white p-4 rounded-2xl border card-border shadow-sm space-y-3">
           <h3 class="font-bold text-gray-700 text-sm border-b pb-2 flex items-center gap-1.5">
             <i data-lucide="history" class="w-4 h-4 text-sage"></i> 履歴一覧
@@ -200,11 +193,13 @@
 
       <!-- タブ3: 貯金管理 -->
       <section id="tab-savings" class="space-y-5 hidden">
+        <!-- 総貯蓄額 -->
         <div class="bg-emerald-800 text-white p-5 rounded-2xl shadow-md space-y-2">
           <p class="text-xs text-emerald-200 font-medium">現在の総貯蓄累計額</p>
           <p id="total-savings-amount" class="text-2xl font-bold tracking-tight">¥0</p>
         </div>
 
+        <!-- 目的別貯金カード -->
         <div class="space-y-3">
           <h3 class="font-bold text-gray-700 text-sm flex items-center gap-1.5">
             <i data-lucide="piggy-bank" class="w-4 h-4 text-sage"></i> 目的別貯金
@@ -212,6 +207,7 @@
           <div id="savings-goals-list" class="space-y-3"></div>
         </div>
 
+        <!-- 貯金/出金記録フォーム -->
         <div class="bg-white p-4 rounded-2xl border card-border shadow-sm space-y-3">
           <h3 class="font-bold text-gray-700 text-sm flex items-center gap-1.5">
             <i data-lucide="plus-circle" class="w-4 h-4 text-sage"></i> 貯金・取崩しの記録
@@ -233,6 +229,7 @@
           </form>
         </div>
 
+        <!-- 貯金履歴一覧 -->
         <div class="bg-white p-4 rounded-2xl border card-border shadow-sm space-y-3">
           <h3 class="font-bold text-gray-700 text-sm border-b pb-2 flex items-center gap-1.5">
             <i data-lucide="list" class="w-4 h-4 text-sage"></i> 貯金・出金履歴一覧
@@ -241,21 +238,13 @@
         </div>
       </section>
 
-      <!-- タブ4: 設定 -->
+      <!-- タブ4: 設定・データ -->
       <section id="tab-settings" class="space-y-5 hidden">
-        <div class="bg-white p-4 rounded-2xl border card-border shadow-sm space-y-3">
-          <h3 class="font-bold text-gray-700 text-sm border-b pb-2 flex items-center gap-1.5">
-            <i data-lucide="key" class="w-4 h-4 text-sage"></i> パスワード設定
-          </h3>
-          <button onclick="changeAppPassword()" class="w-full border border-gray-300 font-bold py-2.5 rounded-xl text-xs hover:bg-gray-50 flex items-center justify-center gap-2">
-            パスワードの変更
-          </button>
-        </div>
-
         <div class="bg-white p-4 rounded-2xl border card-border shadow-sm space-y-3">
           <h3 class="font-bold text-gray-700 text-sm border-b pb-2 flex items-center gap-1.5">
             <i data-lucide="database" class="w-4 h-4 text-sage"></i> データ管理 (CSV)
           </h3>
+          <p class="text-xs text-gray-500">CSV形式でデータのエクスポート・インポートが可能です。</p>
           <div class="flex flex-col gap-2 pt-2">
             <button onclick="exportCSV()" class="w-full border border-gray-300 font-bold py-2.5 rounded-xl text-xs hover:bg-gray-50 flex items-center justify-center gap-2">
               <i data-lucide="download" class="w-4 h-4"></i> CSVエクスポート
@@ -269,22 +258,28 @@
       </section>
     </main>
 
+    <!-- フッターナビ -->
     <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 flex justify-around p-2 text-[10px] font-medium text-gray-500 z-20">
       <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center gap-1 text-sage font-bold">
-        <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>ダッシュ</span>
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+        <span>ダッシュ</span>
       </button>
       <button onclick="switchTab('history')" id="nav-history" class="flex flex-col items-center gap-1">
-        <i data-lucide="receipt" class="w-5 h-5"></i><span>明細・入力</span>
+        <i data-lucide="receipt" class="w-5 h-5"></i>
+        <span>明細・入力</span>
       </button>
       <button onclick="switchTab('savings')" id="nav-savings" class="flex flex-col items-center gap-1">
-        <i data-lucide="piggy-bank" class="w-5 h-5"></i><span>貯金管理</span>
+        <i data-lucide="piggy-bank" class="w-5 h-5"></i>
+        <span>貯金管理</span>
       </button>
       <button onclick="switchTab('settings')" id="nav-settings" class="flex flex-col items-center gap-1">
-        <i data-lucide="settings" class="w-5 h-5"></i><span>設定</span>
+        <i data-lucide="settings" class="w-5 h-5"></i>
+        <span>設定</span>
       </button>
     </nav>
   </div>
 
+  <!-- 予算設定モーダル -->
   <div id="budget-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl p-5 w-full max-w-sm space-y-4 max-h-[85vh] overflow-y-auto">
       <h3 class="font-bold text-gray-800 text-sm border-b pb-2">月間予算の設定</h3>
@@ -297,42 +292,6 @@
   </div>
 
   <script>
-    // パスワード設定（初期設定: Fuyu、大文字と小文字を厳密に区別）
-    function getStoredPass() {
-      const stored = localStorage.getItem('hab_app_pass');
-      return stored ? stored.trim() : 'Fuyu';
-    }
-
-    function verifyPassword(e) {
-      e.preventDefault();
-      const input = document.getElementById('input-pass').value.trim();
-      const currentPass = getStoredPass();
-      
-      // 大文字と小文字を区別して厳密に比較
-      if (input === currentPass) {
-        document.getElementById('auth-screen').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
-        lucide.createIcons();
-        initApp();
-      } else {
-        document.getElementById('auth-error').classList.remove('hidden');
-      }
-    }
-
-    function changeAppPassword() {
-      const current = prompt('現在のパスワードを入力してください:');
-      if (!current || current.trim() !== getStoredPass()) {
-        alert('現在のパスワードが一致しません');
-        return;
-      }
-      const newPass = prompt('新しいパスワードを入力してください:');
-      if (newPass && newPass.trim() !== '') {
-        const rawPass = newPass.trim();
-        localStorage.setItem('hab_app_pass', rawPass);
-        alert('パスワードを変更しました');
-      }
-    }
-
     const CATEGORIES = {
       expense: {
         '固定費': ['家賃'],
@@ -349,14 +308,31 @@
       }
     };
 
-    let transactions = JSON.parse(localStorage.getItem('hab_transactions')) || [];
+    let transactions = JSON.parse(localStorage.getItem('hab_transactions')) || [
+      { id: 1, date: '2026-10-01', type: 'expense', mainCat: '固定費', subCat: '家賃', amount: 80000, payer: 'しゅう', payMethod: 'しゅうカード', memo: '10月分家賃' },
+      { id: 2, date: '2026-10-03', type: 'expense', mainCat: '食費', subCat: '食料品代', amount: 5400, payer: 'りの', payMethod: 'りのカード', memo: 'スーパー買い出し' },
+      { id: 3, date: '2026-10-05', type: 'expense', mainCat: 'その他', subCat: '立替', amount: 12000, payer: 'しゅう', payMethod: '現金', memo: '立替日用品' },
+      { id: 4, date: '2026-10-15', type: 'income', mainCat: '収入', subCat: '給与', amount: 320000, payer: 'しゅう', payMethod: '現金', memo: '10月分給与' }
+    ];
+
     let savingsGoals = JSON.parse(localStorage.getItem('hab_savings_goals')) || [
       { id: 'emergency', name: '生活防衛資金', target: 1000000 },
       { id: 'fuyutan', name: 'ふゆたん貯金', target: 500000 },
       { id: 'travel', name: '旅行貯金', target: 300000 }
     ];
-    let savingsRecords = JSON.parse(localStorage.getItem('hab_savings_records')) || [];
-    let budgets = JSON.parse(localStorage.getItem('hab_budgets')) || { overall: 250000, '食費': 50000, '固定費': 85000 };
+
+    let savingsRecords = JSON.parse(localStorage.getItem('hab_savings_records')) || [
+      { id: 101, goalId: 'emergency', date: '2026-10-01', type: 'deposit', amount: 50000, memo: '今月分積立' },
+      { id: 102, goalId: 'fuyutan', date: '2026-10-05', type: 'deposit', amount: 20000, memo: 'お祝い金貯金' }
+    ];
+
+    let budgets = JSON.parse(localStorage.getItem('hab_budgets')) || {
+      overall: 250000,
+      '食費': 50000,
+      '固定費': 85000,
+      '公共料金': 20000,
+      '雑貨・日用品代': 25000
+    };
 
     let currentYear = 2026;
     let currentMonth = 10;
@@ -364,12 +340,13 @@
     let categoryChartObj = null;
     let trendChartObj = null;
 
-    function initApp() {
+    window.onload = () => {
       document.getElementById('input-date').valueAsDate = new Date();
       document.getElementById('savings-date').valueAsDate = new Date();
       updateCategoryOptions();
       renderAll();
-    }
+      lucide.createIcons();
+    };
 
     function switchTab(tabName) {
       ['dashboard', 'history', 'savings', 'settings'].forEach(t => {
@@ -377,4 +354,47 @@
         document.getElementById(`nav-${t}`).classList.remove('text-sage', 'font-bold');
       });
       document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-      document.ge
+      document.getElementById(`nav-${tabName}`).classList.add('text-sage', 'font-bold');
+      if (tabName === 'dashboard') renderCharts();
+    }
+
+    function setPeriodMode(mode) {
+      periodMode = mode;
+      document.getElementById('mode-month').className = mode === 'month' ? 'px-3 py-1 rounded-md bg-white text-gray-800 shadow-sm transition' : 'px-3 py-1 rounded-md text-white/90 transition';
+      document.getElementById('mode-year').className = mode === 'year' ? 'px-3 py-1 rounded-md bg-white text-gray-800 shadow-sm transition' : 'px-3 py-1 rounded-md text-white/90 transition';
+      document.getElementById('bar-chart-title').innerText = mode === 'month' ? '日別収支推移' : '月別収支推移';
+      
+      const settlementContainer = document.getElementById('settlement-container');
+      if (mode === 'year') {
+        settlementContainer.classList.add('hidden');
+      } else {
+        settlementContainer.classList.remove('hidden');
+      }
+      
+      renderAll();
+    }
+
+    function changePeriod(diff) {
+      if (periodMode === 'month') {
+        currentMonth += diff;
+        if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+        if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+      } else {
+        currentYear += diff;
+      }
+      renderAll();
+    }
+
+    function updateCategoryOptions() {
+      const type = document.querySelector('input[name="type"]:checked').value;
+      const mainSelect = document.getElementById('input-main-cat');
+      mainSelect.innerHTML = '<option value="">大項目を選択</option>';
+      Object.keys(CATEGORIES[type]).forEach(cat => {
+        mainSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+      });
+      updateSubCatOptions();
+    }
+
+    function updateSubCatOptions() {
+      const type = document.querySelector('input[name="type"]:checked').value;
+      const mainCat = document.getElementById('input-main-c
