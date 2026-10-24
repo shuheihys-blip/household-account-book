@@ -269,7 +269,6 @@
       </section>
     </main>
 
-    <!-- フッター -->
     <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 flex justify-around p-2 text-[10px] font-medium text-gray-500 z-20">
       <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center gap-1 text-sage font-bold">
         <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>ダッシュ</span>
@@ -286,7 +285,6 @@
     </nav>
   </div>
 
-  <!-- 予算設定モーダル -->
   <div id="budget-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl p-5 w-full max-w-sm space-y-4 max-h-[85vh] overflow-y-auto">
       <h3 class="font-bold text-gray-800 text-sm border-b pb-2">月間予算の設定</h3>
@@ -299,14 +297,19 @@
   </div>
 
   <script>
-    // パスワード設定（初期値: Fuyu、大文字・小文字を問わず比較）
-    let APP_PASS = (localStorage.getItem('hab_app_pass') || 'Fuyu').trim().toLowerCase();
+    // パスワード設定（初期設定: Fuyu、大文字と小文字を厳密に区別）
+    function getStoredPass() {
+      const stored = localStorage.getItem('hab_app_pass');
+      return stored ? stored.trim() : 'Fuyu';
+    }
 
     function verifyPassword(e) {
       e.preventDefault();
-      const input = document.getElementById('input-pass').value.trim().toLowerCase();
+      const input = document.getElementById('input-pass').value.trim();
+      const currentPass = getStoredPass();
       
-      if (input === APP_PASS) {
+      // 大文字と小文字を区別して厳密に比較
+      if (input === currentPass) {
         document.getElementById('auth-screen').classList.add('hidden');
         document.getElementById('app').classList.remove('hidden');
         lucide.createIcons();
@@ -318,14 +321,13 @@
 
     function changeAppPassword() {
       const current = prompt('現在のパスワードを入力してください:');
-      if (!current || current.trim().toLowerCase() !== APP_PASS) {
+      if (!current || current.trim() !== getStoredPass()) {
         alert('現在のパスワードが一致しません');
         return;
       }
       const newPass = prompt('新しいパスワードを入力してください:');
       if (newPass && newPass.trim() !== '') {
         const rawPass = newPass.trim();
-        APP_PASS = rawPass.toLowerCase();
         localStorage.setItem('hab_app_pass', rawPass);
         alert('パスワードを変更しました');
       }
@@ -375,4 +377,4 @@
         document.getElementById(`nav-${t}`).classList.remove('text-sage', 'font-bold');
       });
       document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-      document.getElementById(`nav-${tabNa
+      document.ge
